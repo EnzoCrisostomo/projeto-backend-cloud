@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model cnaes {
+  codigo    String  @id @db.VarChar
+  descricao String?
+}
+
+model empresas {
+  id                          Int            @id @default(autoincrement())
+  cnpj_basico                 String?        @unique @db.VarChar(8)
+  razao_social                String?        @db.VarChar
+  natureza_juridica           String?        @db.VarChar
+  qualificacao_responsavel    String?        @db.VarChar
+  capital_social              String?        @db.VarChar
+  porte                       String?
+  ente_federativo_responsavel String?        @db.VarChar
+  municipios                  municipios?    @relation(fields: [ente_federativo_responsavel], references: [codigo], onDelete: NoAction, onUpdate: NoAction)
+  naturezas                   naturezas?     @relation(fields: [natureza_juridica], references: [codigo], onDelete: NoAction, onUpdate: NoAction)
+  qualificacoes               qualificacoes? @relation(fields: [qualificacao_responsavel], references: [codigo], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model estabelecimentos {
+  id                          Int         @id @default(autoincrement())
+  cnpj_basico                 String?     @db.VarChar(8)
+  cnpj_ordem                  String?     @db.VarChar(4)
+  cnpj_dv                     String?     @db.VarChar(2)
+  identificador_matriz_filial String?
+  situacao_cadastral          String?
+  data_situacao_cadastral     DateTime?   @db.Timestamp(6)
+  motivo_situacao_cadastral   String?     @db.VarChar
+  nome_cidade_exterior        String?     @db.VarChar
+  pais                        String?     @db.VarChar
+  data_inicio_atividade       DateTime?   @db.Timestamp(6)
+  cnae_principal              String?     @db.VarChar
+  cnae_secundaria             String?     @db.VarChar
+  tipo_logradouro             String?     @db.VarChar
+  logradouro                  String?     @db.VarChar
+  numero                      String?     @db.VarChar
+  complemento                 String?     @db.VarChar
+  bairro                      String?     @db.VarChar
+  cep                         String?     @db.VarChar
+  uf                          String?     @db.VarChar
+  municipio                   String?     @db.VarChar
+  ddd_1                       String?     @db.VarChar
+  telefone_1                  String?     @db.VarChar
+  ddd_2                       String?     @db.VarChar
+  telefone_2                  String?     @db.VarChar
+  ddd_fax                     String?     @db.VarChar
+  fax                         String?     @db.VarChar
+  email                       String?     @db.VarChar
+  situacao_especial           String?     @db.VarChar
+  data_situacao_especial      DateTime?   @db.Timestamp(6)
+  municipios                  municipios? @relation(fields: [municipio], references: [codigo], onDelete: NoAction, onUpdate: NoAction)
+  paises                      paises?     @relation(fields: [pais], references: [codigo], onDelete: NoAction, onUpdate: NoAction)
+  estados                     estados?    @relation(fields: [uf], references: [codigo], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model estados {
+  codigo           String             @id @db.VarChar
+  descricao        String?
+  estabelecimentos estabelecimentos[]
+}
+
+model municipios {
+  codigo           String             @id @db.VarChar
+  descricao        String?
+  empresas         empresas[]
+  estabelecimentos estabelecimentos[]
+}
+
+model naturezas {
+  codigo    String     @id @db.VarChar
+  descricao String?
+  empresas  empresas[]
+}
+
+model paises {
+  codigo           String             @id @db.VarChar
+  descricao        String?
+  estabelecimentos estabelecimentos[]
+  socios           socios[]
+}
+
+model qualificacoes {
+  codigo                                                        String     @id @db.VarChar
+  descricao                                                     String?
+  empresas                                                      empresas[]
+  socios_socios_qualificacaoToqualificacoes                     socios[]   @relation("socios_qualificacaoToqualificacoes")
+  socios_socios_qualificacao_representante_legalToqualificacoes socios[]   @relation("socios_qualificacao_representante_legalToqualificacoes")
+}
+
+model simples {
+  id                Int          @id @default(autoincrement())
+  cnpj_basico       String?      @db.VarChar(8)
+  opcao_simples     String?
+  data_opcao        DateTime?    @db.Timestamp(6)
+  data_exclusao     DateTime?    @db.Timestamp(6)
+  opcao_mei         String?
+  data_opcao_mei    DateTime?    @db.Timestamp(6)
+  data_exclusao_mei DateTime?    @db.Timestamp(6)
+}
+
+model socios {
+  id                                                                   Int            @id @default(autoincrement())
+  cnpj_basico                                                          String?        @db.VarChar(8)
+  identificador_socio                                                  String?
+  nome                                                                 String?        @db.VarChar
+  cpf_cnpj                                                             String?        @db.VarChar(14)
+  qualificacao                                                         String?        @db.VarChar
+  data_entrada                                                         DateTime?      @db.Timestamp(6)
+  pais                                                                 String?        @db.VarChar
+  cpf_representante_legal                                              String?        @db.VarChar(14)
+  nome_representante_legal                                             String?        @db.VarChar
+  qualificacao_representante_legal                                     String?        @db.VarChar
+  faixa_etaria                                                         String?        @db.VarChar
+  paises                                                               paises?        @relation(fields: [pais], references: [codigo], onDelete: NoAction, onUpdate: NoAction)
+  qualificacoes_socios_qualificacaoToqualificacoes                     qualificacoes? @relation("socios_qualificacaoToqualificacoes", fields: [qualificacao], references: [codigo], onDelete: NoAction, onUpdate: NoAction)
+  qualificacoes_socios_qualificacao_representante_legalToqualificacoes qualificacoes? @relation("socios_qualificacao_representante_legalToqualificacoes", fields: [qualificacao_representante_legal], references: [codigo], onDelete: NoAction, onUpdate: NoAction)
+}

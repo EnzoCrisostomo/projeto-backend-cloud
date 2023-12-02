@@ -1,29 +1,39 @@
-import cors from "cors";
-import dotenv from "dotenv-safe";
 import express from "express";
+import "express-async-errors";
+import morgan from "morgan";
+import helmet from "helmet";
+import cors from "cors";
+import prisma from "./prisma";
+import handlePrismaError from "./middlewares/handlePrismaError";
+import handleCommonError from "./middlewares/handleCommonError";
+import handleZodError from "./middlewares/handleZodError";
 import path from "path";
+import dotenv from "dotenv-safe";
 import empresasRouter from "./routes/empresas";
-import { populateDb } from "./services/populateDb";
 
-const ROOT_PATH = path.resolve(__dirname, "..");
-dotenv.config({ path: path.resolve(ROOT_PATH, ".env") });
+const PROJECT_ROOT = path.resolve(__dirname, "..");
+
+dotenv.config({
+  example: path.resolve(PROJECT_ROOT, ".env.example"),
+  path: path.resolve(PROJECT_ROOT, ".env"),
+});
 
 const PORT = process.env.PORT as string;
 
 const app = express();
 
-if (process.env.NODE_ENV === "development") {
-	app.use(cors({ origin: [`http://localhost:${PORT}`, `https://localhost:${PORT}`] }));
-}
-
+app.use(morgan("dev"));
+app.use(helmet());
 app.use(express.json());
+app.use(cors({origin: '*'}));
 
-app.get("/api", (_, res) => res.send("<bold>Status: ONLINE</bold>"));
-app.use("/api/empresas/", empresasRouter);
-// app.use("/api/socios/", sociosRouter);
+app.use("/empresas", empresasRouter);
 
-app.listen(PORT, () => {
-	if (process.env.NODE_ENV === "development") {
-		console.log(`http://localhost:${PORT}/api`);
-	}
+app.use(handleZodError);
+app.use(handlePrismaError);
+app.use(handleCommonError);
+
+app.listen(PORT, async () => {
+  await prisma.$connect();
+  console.log(`Server is running in http://localhost:${PORT}`);
 });

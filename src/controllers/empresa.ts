@@ -1,22 +1,29 @@
 import { RequestHandler } from "express";
-import dbClient from "../services/db";
+import prisma from "../prisma";
+import { SearchEmpresaQuery } from "../schemas/empresas";
 
-const getEmpresa: RequestHandler = async (req, res) => {
-	const { id } = req.params;
+const searchEmpresa: RequestHandler = async (req, res) => {
+	const { cnpjBasico, razaoSocial, _offset, _size } = SearchEmpresaQuery.parse(req.query);
 
 	try {
-		const { rows } = await dbClient.query("SELECT * FROM empresas WHERE cnpj_basico=$1", [id]);
+		const rows = await prisma.$queryRaw`
+			select
+        	count(e.*) over() as _total,
+        	e.*
+      		from empresas e
+      		where 	(unaccent(e.cnpj_basico) ilike '%'||unaccent(${cnpjBasico}::text)||'%' or ${cnpjBasico}::text is null) and
+            		(unaccent(e.razao_social) ilike '%'||unaccent(${razaoSocial}::text)||'%' or ${razaoSocial}::text is null)
+      		order by e.razao_social
+      		offset ${_offset}::integer
+      		limit ${_size}::integer
+		`;
 
-		if (rows.length === 0) {
-			return res.status(404).json({ message: "Empresa não encontrada" });
-		}
-
-		return res.json(rows[0]);
+		return res.json(rows);
 	} catch (err) {
-		return res.status(500).json({ message: "Erro interno do servidor" });
+		return res.status(500).json({ message: "Erro interno do servidor" + err.message });
 	}
 };
 
 export default {
-	getEmpresa,
+	searchEmpresa,
 };

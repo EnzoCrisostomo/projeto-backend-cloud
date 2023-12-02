@@ -1,125 +1,136 @@
-drop database if exists cnpj;
-create database cnpj;
-use cnpj;
-
 create table cnaes (
-    codigo varchar(255) not null unique,
-    descricao text not null,
+    codigo varchar unique,
+    descricao text,
     primary key (codigo)
 );
 
 create table naturezas (
-    codigo varchar(255) not null unique,
-    descricao text not null,
+    codigo varchar unique,
+    descricao text,
     primary key (codigo)
 );
 
 create table qualificacoes (
-    codigo varchar(255) not null unique,
-    descricao text not null,
+    codigo varchar unique,
+    descricao text,
     primary key (codigo)
 );
 
 create table municipios (
-    codigo varchar(255) not null unique,
-    descricao text not null,
+    codigo varchar unique,
+    descricao text,
     primary key (codigo)
 );
 
 create table estados (
-    codigo varchar(255) not null unique,
-    descricao text not null,
+    codigo varchar unique,
+    descricao text,
     primary key (codigo)
 );
 
-create table paizes (
-    codigo varchar(255) not null unique,
-    descricao text not null,
+create table paises (
+    codigo varchar unique,
+    descricao text,
     primary key (codigo)
 );
+
+DO $$ begin
+	create type socio_enum as ENUM ('1', '2', '3');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
 
 create table socios (
-    id int not null auto_increment unique,
-    cnpj_basico varchar(8) not null,
-    identificador_socio enum('1', '2', '3') not null,
-    nome varchar(255) not null,
-    cpf_cnpj varchar(14) not null,
-    qualificacao varchar(255) not null,
-    data_entrada timestamp not null,
-    pais varchar(255) not null,
-    cpf_representante_legal varchar(14) not null,
-    nome_representante_legal varchar(255) not null,
-    qualificacao_representante_legal varchar(255) not null,
-    faixa_etaria varchar(255) not null,
-    primary key (id)
-    foreign key (qualificacao) references qualificacoes(codigo),
-    foreign key (pais) references paizes(codigo)
-    foreign key (qualificacao_representante_legal) references qualificacoes(codigo)
+    id serial primary key,
+    cnpj_basico varchar(8),
+    identificador_socio socio_enum,
+    nome varchar,
+    cpf_cnpj varchar(14),
+    qualificacao varchar references qualificacoes(codigo),
+    data_entrada timestamp,
+    pais varchar references paises(codigo),
+    cpf_representante_legal varchar(14),
+    nome_representante_legal varchar,
+    qualificacao_representante_legal varchar references qualificacoes(codigo),
+    faixa_etaria varchar
 );
+
+DO $$ begin
+    create type opt_simples as ENUM ('S', 'N', 'EM BRANCO');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 create table simples (
-    id int not null auto_increment unique,
-    cnpj_basico varchar(8) not null,
-    opcao_simples enum('S', 'N', 'EM BRANCO') not null,
+    id serial primary key,
+    cnpj_basico varchar(8),
+    opcao_simples opt_simples,
     data_opcao timestamp,
     data_exclusao timestamp,
-    opcao_mei  enum('S', 'N', 'EM BRANCO') not null,
+    opcao_mei opt_simples,
     data_opcao_mei timestamp,
-    data_exclusao_mei timestamp,
-    primary key (id)
+    data_exclusao_mei timestamp
 );
+
+DO $$ begin
+    create type id_mat_fil as ENUM ('1', '2');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ begin
+    create type sit_cad as ENUM ('01', '2', '3', '4', '08');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 create table estabelecimentos (
-    id int not null auto_increment unique,
-    cnpj_basico varchar(8) not null,
-    cnpj_ordem varchar(4) not null,
-    cnpj_dv varchar(2) not null,
-    identificador_matriz_filial enum('1', '2') not null,
-    situacao_cadastral enum('01', '2', '3', '4', '08') not null,
-    data_situacao_cadastral timestamp not null,
-    motivo_situacao_cadastral varchar(255) not null,
-    nome_cidade_exterior varchar(255) not null,
-    pais varchar(255) not null,
-    data_inicio_atividade timestamp not null,
-    cnae_principal varchar(255) not null,
-    cnae_secundaria varchar(255) not null,
-    tipo_logradouro varchar(255) not null,
-    logradouro varchar(255) not null,
-    numero varchar(255) not null,
-    complemento varchar(255) not null,
-    bairro varchar(255) not null,
-    cep varchar(255) not null,
-    uf varchar(255) not null,
-    municipio varchar(255) not null,
-    ddd_1 varchar(255) not null,
-    telefone_1 varchar(255) not null,
-    ddd_2 varchar(255) not null,
-    telefone_2 varchar(255) not null,
-    ddd_fax varchar(255) not null,
-    fax varchar(255) not null,
-    email varchar(255) not null,
-    situacao_especial varchar(255) not null,
-    data_situacao_especial timestamp,
-    primary key (id)
-    foreign key (pais) references paizes(codigo)
-    -- foreign key (cnae_principal) references cnaes(codigo)
-    -- foreign key (cnae_secundaria) references cnaes(codigo)
-    foreign key (uf) references estados(codigo)
-    foreign key (municipio) references municipios(codigo)
+    id serial primary key,
+    cnpj_basico varchar(8),
+    cnpj_ordem varchar(4),
+    cnpj_dv varchar(2),
+    identificador_matriz_filial id_mat_fil,
+    situacao_cadastral sit_cad,
+    data_situacao_cadastral timestamp,
+    motivo_situacao_cadastral varchar,
+    nome_cidade_exterior varchar,
+    pais varchar references paises(codigo),
+    data_inicio_atividade timestamp,
+    cnae_principal varchar,
+    cnae_secundaria varchar,
+    tipo_logradouro varchar,
+    logradouro varchar,
+    numero varchar,
+    complemento varchar,
+    bairro varchar,
+    cep varchar,
+    uf varchar references estados(codigo),
+    municipio varchar references municipios(codigo),
+    ddd_1 varchar,
+    telefone_1 varchar,
+    ddd_2 varchar,
+    telefone_2 varchar,
+    ddd_fax varchar,
+    fax varchar,
+    email varchar,
+    situacao_especial varchar,
+    data_situacao_especial timestamp
 );
 
+DO $$ begin
+    create type porte_enum as ENUM ('00','01','03','05');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 create table empresas (
-    id int not null auto_increment,
-    cnpj_basico varchar(8) not null unique,
-    razao_social varchar(255) not null,
-    natureza_juridica varchar(255) not null,
-    qualificacao_responsavel varchar(255) not null,
-    capital_social varchar(255) not null,
-    porte enum('00','01','03','05') not null,
-    ente_federativo_responsavel varchar(255),
-    primary key (id)
-    foreign key (natureza_juridica) references naturezas(codigo)
-    foreign key (qualificacao_responsavel) references qualificacoes(codigo)
-    foreign key (ente_federativo_responsavel) references municipios(codigo)
+    id serial primary key,
+    cnpj_basico varchar(8) unique,
+    razao_social varchar,
+    natureza_juridica varchar references naturezas(codigo),
+    qualificacao_responsavel varchar references qualificacoes(codigo),
+    capital_social varchar,
+    porte porte_enum,
+    ente_federativo_responsavel varchar references municipios(codigo)
 );
