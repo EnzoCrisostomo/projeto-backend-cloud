@@ -9,7 +9,6 @@ export const SearchSociosParams = z.object({
 });
 
 export const SociosEntity = z.object({
-  _total: z.bigint().min(BigInt(0)),
   id: z.coerce.number(),
   cnpj_basico: z.string().nullable(),
   identificador_socio: z.string().nullable(),
@@ -24,4 +23,16 @@ export const SociosEntity = z.object({
   faixa_etaria: z.string().nullable(),
 })
 
-export const SociosEntityList = z.array(SociosEntity);
+export const ShortSocioEntity = SociosEntity.pick({
+  id: true,
+  identificador_socio: true,
+  cpf_cnpj: true,
+  nome: true,
+});
+
+export const CreateSociosEntity = SociosEntity.omit({ id: true });
+export const UpdateSociosEntity = SociosEntity.omit({ id: true }).partial();
+
+export const SociosEntityList = z.array(ShortSocioEntity.extend(
+  { _total: z.bigint().min(BigInt(0)), }
+));

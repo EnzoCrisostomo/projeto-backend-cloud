@@ -39,8 +39,18 @@ export const EstabelecimentoEntity = z.object({
   email: z.string().nullable(),
   situacao_especial: z.string().nullable(),
   data_situacao_especial: z.string().nullable(),
-})
+});
 
-export const EstabelecimentoEntityList = z.array(EstabelecimentoEntity.merge(
-  z.object({ _total: z.bigint().min(BigInt(0)), })
+export const ShortEstabelecimentoEntity = EstabelecimentoEntity.pick({
+  id: true,
+  cnpj_basico: true,
+  razao_social: true,
+  email: true,
+});
+
+export const CreateEstabelecimentoEntity = EstabelecimentoEntity.omit({ id: true });
+export const UpdateEstabelecimentoEntity = EstabelecimentoEntity.omit({ id: true }).partial();
+
+export const EstabelecimentoEntityList = z.array(ShortEstabelecimentoEntity.extend(
+  { _total: z.bigint().min(BigInt(0)), }
 ));

@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import prisma from "../prisma";
-import { EmpresaEntity, EmpresaEntityList, SearchEmpresaParams } from "../schemas/empresas";
+import { CreateEmpresaEntity, EmpresaEntity, EmpresaEntityList, SearchEmpresaParams, UpdateEmpresaEntity } from "../schemas/empresas";
 import HttpError from "http-errors";
 import { z } from "zod";
 import { mountSearchSet } from "../utils";
@@ -29,7 +29,7 @@ const searchEmpresa: RequestHandler = async (req, res) => {
 		delete item._total;
 	}
 
-	return res.json(mountSearchSet(rows, _offset, _total));
+	return res.status(200).json(mountSearchSet(rows, _offset, _total));
 };
 
 const detailEmpresa: RequestHandler = async (req, res) => {
@@ -46,11 +46,70 @@ const detailEmpresa: RequestHandler = async (req, res) => {
 		throw new HttpError.NotFound(`Empresa [${id}] não encontrada!`);
 	}
 
-	return res.json(empresa);
+	return res.status(200).json(empresa);
 
 };
 
+const createEmpresa: RequestHandler = async (req, res) => {
+	const {
+		capital_social,
+		cnpj_basico,
+		ente_federativo_responsavel,
+		natureza_juridica,
+		porte,
+		qualificacao_responsavel,
+		razao_social
+	} = CreateEmpresaEntity.parse(req.body);
+
+	const empresa = await prisma.empresas.create({
+		data: {
+			capital_social,
+			cnpj_basico,
+			ente_federativo_responsavel,
+			natureza_juridica,
+			porte,
+			qualificacao_responsavel,
+			razao_social
+		}
+	});
+
+	return res.status(201).json(empresa);
+};
+
+const updateEmpresa: RequestHandler = async (req, res) => {
+	const { id } = z.object({ id: z.coerce.number() }).parse(req.params);
+	const {
+		capital_social,
+		cnpj_basico,
+		ente_federativo_responsavel,
+		natureza_juridica,
+		porte,
+		qualificacao_responsavel,
+		razao_social
+	} = UpdateEmpresaEntity.parse(req.body);
+
+	const empresa = await prisma.empresas.update({
+		where: {
+			id
+		},
+		data: {
+			capital_social,
+			cnpj_basico,
+			ente_federativo_responsavel,
+			natureza_juridica,
+			porte,
+			qualificacao_responsavel,
+			razao_social
+		}
+	});
+
+	return res.status(200).json(empresa);
+};
+
+
 export default {
 	searchEmpresa,
-	detailEmpresa
+	detailEmpresa,
+	createEmpresa,
+	updateEmpresa
 };

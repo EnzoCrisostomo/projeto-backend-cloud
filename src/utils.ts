@@ -1,14 +1,14 @@
 export function mountSearchSet<ItemType>(
-  _items: ItemType[],
-  _offset?: number,
-  _total?: number
+  items: ItemType[],
+  offset?: number,
+  total?: number
 ) {
   return {
-    _timestamp: Date.now(),
-    _total: _total ?? 0,
-    _size: _items.length,
-    _offset: _offset ?? 0,
-    _items,
+    timestamp: Date.now(),
+    total: total ?? 0,
+    size: items.length,
+    offset: offset ?? 0,
+    items,
   };
 }
 

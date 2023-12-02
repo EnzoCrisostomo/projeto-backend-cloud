@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import prisma from "../prisma";
-import { EstabelecimentoEntity, EstabelecimentoEntityList, SearchEstabelecimentoParams } from "../schemas/estabelecimentos";
+import { CreateEstabelecimentoEntity, EstabelecimentoEntity, EstabelecimentoEntityList, SearchEstabelecimentoParams, UpdateEstabelecimentoEntity } from "../schemas/estabelecimentos";
 import HttpError from "http-errors";
 import { z } from "zod";
 import { mountSearchSet } from "../utils";
@@ -48,7 +48,31 @@ const detailEstabelecimento: RequestHandler = async (req, res) => {
 	return res.json(estabelecimento);
 };
 
+const createEstabelecimento: RequestHandler = async (req, res) => {
+	const newEstabelecimento = CreateEstabelecimentoEntity.parse(req.body);
+
+	const estabelecimento = await prisma.estabelecimentos.create({
+		data: { ...newEstabelecimento }
+	});
+
+	return res.status(201).json(estabelecimento);
+};
+
+const updateEstabelecimento: RequestHandler = async (req, res) => {
+	const { id } = z.object({ id: z.coerce.number() }).parse(req.params);
+	const updatedEstabelecimento = UpdateEstabelecimentoEntity.parse(req.body);
+
+	const estabelecimento = await prisma.empresas.update({
+		where: { id },
+		data: { ...updatedEstabelecimento }
+	});
+
+	return res.status(200).json(estabelecimento);
+};
+
 export default {
 	searchEstabelecimento,
-	detailEstabelecimento
+	detailEstabelecimento,
+	createEstabelecimento,
+	updateEstabelecimento
 };

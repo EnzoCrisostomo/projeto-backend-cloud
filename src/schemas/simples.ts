@@ -17,6 +17,9 @@ export const SimplesEntity = z.object({
   data_exclusao_mei: z.string().nullable(),
 })
 
-export const SimplesEntityList = z.array(SimplesEntity.merge(
-  z.object({ _total: z.bigint().min(BigInt(0)), })
+export const CreateSimplesEntity = SimplesEntity.omit({ id: true });
+export const UpdateSimplesEntity = SimplesEntity.omit({ id: true }).partial();
+
+export const SimplesEntityList = z.array(SimplesEntity.extend(
+  { _total: z.bigint().min(BigInt(0)), }
 ));

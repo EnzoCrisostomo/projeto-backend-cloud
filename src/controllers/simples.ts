@@ -3,7 +3,7 @@ import prisma from "../prisma";
 import HttpError from "http-errors";
 import { z } from "zod";
 import { mountSearchSet } from "../utils";
-import { SearchSimplesParams, SimplesEntity, SimplesEntityList } from "../schemas/simples";
+import { CreateSimplesEntity, SearchSimplesParams, SimplesEntity, SimplesEntityList, UpdateSimplesEntity } from "../schemas/simples";
 
 const searchSimples: RequestHandler = async (req, res) => {
 	const { cnpjBasico, _offset, _size } = SearchSimplesParams.parse(req.query);
@@ -44,7 +44,31 @@ const detailSimples: RequestHandler = async (req, res) => {
 	return res.json(simples);
 };
 
+const createSimples: RequestHandler = async (req, res) => {
+	const newSimples = CreateSimplesEntity.parse(req.body);
+
+	const simples = await prisma.simples.create({
+		data: { ...newSimples }
+	});
+
+	return res.status(201).json(simples);
+};
+
+const updateSimples: RequestHandler = async (req, res) => {
+	const { id } = z.object({ id: z.coerce.number() }).parse(req.params);
+	const updatedSimples = UpdateSimplesEntity.parse(req.body);
+
+	const simples = await prisma.simples.update({
+		where: { id },
+		data: { ...updatedSimples }
+	});
+
+	return res.status(200).json(simples);
+};
+
 export default {
 	searchSimples,
-	detailSimples
+	detailSimples,
+	createSimples,
+	updateSimples
 };

@@ -9,10 +9,10 @@ export const SearchQualificacaoParams = z.object({
 export const QualificacaoEntity = z.object({
   codigo: z.string(),
   descricao: z.string().nullable(),
-})
+});
+
+export const UpdateQualificacaoEntity = QualificacaoEntity.omit({ codigo: true }).partial();
 
 export const QualificacaoEntityList = z.array(
-  QualificacaoEntity.merge(
-    z.object({ _total: z.bigint().min(BigInt(0)), })
-  )
+  QualificacaoEntity.extend({ _total: z.bigint().min(BigInt(0)), })
 );

@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import prisma from "../prisma";
-import { NaturezaEntity, NaturezaEntityList, SearchNaturezaParams } from "../schemas/naturezas";
+import { NaturezaEntity, NaturezaEntityList, SearchNaturezaParams, UpdateNaturezaEntity } from "../schemas/naturezas";
 import HttpError from "http-errors";
 import { z } from "zod";
 import { mountSearchSet } from "../utils";
@@ -25,26 +25,57 @@ const searchNatureza: RequestHandler = async (req, res) => {
 		delete item._total;
 	}
 
-	return res.json(mountSearchSet(rows, _offset, _total));
+	return res.status(200).json(mountSearchSet(rows, _offset, _total));
 };
 
 const detailNatureza: RequestHandler = async (req, res) => {
-	const { id } = req.params;
+	const { codigo } = req.params;
 
 	const natureza = await prisma.naturezas.findUnique({
 		where: {
-			codigo: id,
+			codigo,
 		},
 	});
 
 	if (!natureza) {
-		throw new HttpError.NotFound(`Natureza [${id}] não encontrada!`);
+		throw new HttpError.NotFound(`Natureza [${codigo}] não encontrada!`);
 	}
 
-	return res.json(natureza);
+	return res.status(200).json(natureza);
+};
+
+const createNatureza: RequestHandler = async (req, res) => {
+	const { codigo, descricao } = NaturezaEntity.parse(req.body);
+
+	const natureza = await prisma.naturezas.create({
+		data: {
+			codigo,
+			descricao
+		}
+	});
+
+	return res.status(201).json(natureza);
+};
+
+const updateNatureza: RequestHandler = async (req, res) => {
+	const { codigo } = req.params;
+	const { descricao } = UpdateNaturezaEntity.parse(req.body);
+
+	const natureza = await prisma.naturezas.update({
+		where: {
+			codigo
+		},
+		data: {
+			descricao
+		}
+	});
+
+	return res.status(200).json(natureza);
 };
 
 export default {
 	searchNatureza,
-	detailNatureza
+	detailNatureza,
+	createNatureza,
+	updateNatureza
 };

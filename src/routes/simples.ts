@@ -4,6 +4,8 @@ import SimplesController from "../controllers/simples";
 const simplesRouter = Router();
 
 simplesRouter.get("/", SimplesController.searchSimples);
-simplesRouter.get("/", SimplesController.detailSimples);
+simplesRouter.get("/:id", SimplesController.detailSimples);
+simplesRouter.post("/", SimplesController.createSimples);
+simplesRouter.patch("/:id", SimplesController.updateSimples);
 
 export default simplesRouter;

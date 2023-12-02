@@ -18,8 +18,15 @@ export const EmpresaEntity = z.object({
   ente_federativo_responsavel: z.string().nullable()
 })
 
+export const ShortEmpresaEntity = EmpresaEntity.pick({
+  id: true,
+  cnpj_basico: true,
+  razao_social: true,
+});
+
+export const CreateEmpresaEntity = EmpresaEntity.omit({ id: true });
+export const UpdateEmpresaEntity = EmpresaEntity.omit({ id: true }).partial();
+
 export const EmpresaEntityList = z.array(
-  EmpresaEntity.merge(
-    z.object({ _total: z.number().min(0), })
-  )
+  ShortEmpresaEntity.extend({ _total: z.number().min(0), })
 );

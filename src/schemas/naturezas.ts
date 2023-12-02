@@ -9,10 +9,11 @@ export const SearchNaturezaParams = z.object({
 export const NaturezaEntity = z.object({
   codigo: z.string(),
   descricao: z.string().nullable(),
-})
+});
+
+export const UpdateNaturezaEntity = NaturezaEntity.omit({ codigo: true });
 
 export const NaturezaEntityList = z.array(
-  NaturezaEntity.merge(
-    z.object({ _total: z.bigint().min(BigInt(0)), })
+  NaturezaEntity.extend({ _total: z.bigint().min(BigInt(0)), }
   )
 );

@@ -3,7 +3,7 @@ import prisma from "../prisma";
 import HttpError from "http-errors";
 import { z } from "zod";
 import { mountSearchSet } from "../utils";
-import { QualificacaoEntity, QualificacaoEntityList, SearchQualificacaoParams } from "../schemas/qualificacoes";
+import { QualificacaoEntity, QualificacaoEntityList, SearchQualificacaoParams, UpdateQualificacaoEntity } from "../schemas/qualificacoes";
 
 const searchQualificacao: RequestHandler = async (req, res) => {
 	const { descricao, _offset, _size } = SearchQualificacaoParams.parse(req.query);
@@ -29,22 +29,46 @@ const searchQualificacao: RequestHandler = async (req, res) => {
 };
 
 const detailQualificacao: RequestHandler = async (req, res) => {
-	const { id } = req.params;
+	const { codigo } = req.params;
 
 	const qualificacao = await prisma.qualificacoes.findUnique({
 		where: {
-			codigo: id,
+			codigo,
 		},
 	});
 
 	if (!qualificacao) {
-		throw new HttpError.NotFound(`Qualificação [${id}] não encontrada!`);
+		throw new HttpError.NotFound(`Qualificação [${codigo}] não encontrada!`);
 	}
 
 	return res.json(qualificacao);
 };
 
+const createQualificacao: RequestHandler = async (req, res) => {
+	const { codigo, descricao } = QualificacaoEntity.parse(req.body);
+
+	const qualificacao = await prisma.qualificacoes.create({
+		data: { codigo, descricao }
+	});
+
+	return res.status(201).json(qualificacao);
+};
+
+const updateQualificacao: RequestHandler = async (req, res) => {
+	const { codigo } = req.params;
+	const updatedQualificacao = UpdateQualificacaoEntity.parse(req.body);
+
+	const qualificacao = await prisma.qualificacoes.update({
+		where: { codigo },
+		data: { ...updatedQualificacao }
+	});
+
+	return res.status(200).json(qualificacao);
+};
+
 export default {
 	searchQualificacao,
-	detailQualificacao
+	detailQualificacao,
+	createQualificacao,
+	updateQualificacao
 };

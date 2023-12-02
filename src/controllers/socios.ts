@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import prisma from "../prisma";
-import { SearchSociosParams, SociosEntity, SociosEntityList } from "../schemas/socios";
+import { CreateSociosEntity, SearchSociosParams, SociosEntity, SociosEntityList, UpdateSociosEntity } from "../schemas/socios";
 import HttpError from "http-errors";
 import { z } from 'zod'
 import { mountSearchSet } from "../utils";
@@ -41,13 +41,38 @@ const detailSocio: RequestHandler = async (req, res) => {
 	});
 
 	if (!socio) {
-		throw new HttpError.NotFound(`Socio [${id}] não encontrado!`);
+		throw new HttpError.NotFound(`Sócio [${id}] não encontrado!`);
 	}
 
 	return res.json(socio);
 };
 
+const createSocio: RequestHandler = async (req, res) => {
+	const newSocio = CreateSociosEntity.parse(req.body);
+
+	const socio = await prisma.socios.create({
+		data: { ...newSocio }
+	});
+
+	return res.status(201).json(socio);
+};
+
+const updateSocio: RequestHandler = async (req, res) => {
+	const { id } = z.object({ id: z.coerce.number() }).parse(req.params);
+	const updatedSocio = UpdateSociosEntity.parse(req.body);
+
+	const socio = await prisma.socios.update({
+		where: { id },
+		data: { ...updatedSocio }
+	});
+
+	return res.status(200).json(socio);
+};
+
+
 export default {
 	searchSocio,
-	detailSocio
+	detailSocio,
+	createSocio,
+	updateSocio
 };
