@@ -15,7 +15,6 @@ const PROJECT_ROOT = path.resolve(__dirname, "..");
 
 dotenv.config({
   example: path.resolve(PROJECT_ROOT, ".env.example"),
-  path: path.resolve(PROJECT_ROOT, ".env"),
 });
 
 const PORT = process.env.PORT;

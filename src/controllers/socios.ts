@@ -34,11 +34,11 @@ const searchSocio: RequestHandler = async (req, res) => {
 const detailSocio: RequestHandler = async (req, res) => {
 	const { id } = z.object({ id: z.coerce.number() }).parse(req.params);
 
-	const socio = SociosEntity.parse(await prisma.socios.findUnique({
+	const socio = await prisma.socios.findUnique({
 		where: {
 			id,
 		},
-	}));
+	});
 
 	if (!socio) {
 		throw new HttpError.NotFound(`Socio [${id}] não encontrado!`);

@@ -4,8 +4,8 @@ export const SearchSociosParams = z.object({
   cnpjBasico: z.string().optional(),
   nome: z.string().optional(),
   nome_representante_legal: z.string().optional(),
-  _offset: z.coerce.number().min(0, '_offset não pode ser menor que 0.').optional(),
-  _size: z.coerce.number().min(1, '_size não pode ser menor que 1.').optional(),
+  _offset: z.coerce.number().min(0, '_offset não pode ser menor que 0.').default(0),
+  _size: z.coerce.number().min(1, '_size não pode ser menor que 1.').default(20),
 });
 
 export const SociosEntity = z.object({

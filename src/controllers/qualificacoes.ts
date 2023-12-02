@@ -31,11 +31,11 @@ const searchQualificacao: RequestHandler = async (req, res) => {
 const detailQualificacao: RequestHandler = async (req, res) => {
 	const { id } = req.params;
 
-	const qualificacao = QualificacaoEntity.parse(await prisma.qualificacoes.findUnique({
+	const qualificacao = await prisma.qualificacoes.findUnique({
 		where: {
 			codigo: id,
 		},
-	}));
+	});
 
 	if (!qualificacao) {
 		throw new HttpError.NotFound(`Qualificação [${id}] não encontrada!`);

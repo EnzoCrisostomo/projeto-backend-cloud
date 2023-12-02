@@ -36,11 +36,11 @@ const detailEmpresa: RequestHandler = async (req, res) => {
 	console.log("detailEmpresa");
 	const { id } = z.object({ id: z.coerce.number() }).parse(req.params);
 
-	const empresa = EmpresaEntity.parse(await prisma.empresas.findUnique({
+	const empresa = await prisma.empresas.findUnique({
 		where: {
 			id,
 		},
-	}));
+	});
 
 	if (!empresa) {
 		throw new HttpError.NotFound(`Empresa [${id}] não encontrada!`);

@@ -31,11 +31,11 @@ const searchNatureza: RequestHandler = async (req, res) => {
 const detailNatureza: RequestHandler = async (req, res) => {
 	const { id } = req.params;
 
-	const natureza = NaturezaEntity.parse(await prisma.naturezas.findUnique({
+	const natureza = await prisma.naturezas.findUnique({
 		where: {
 			codigo: id,
 		},
-	}));
+	});
 
 	if (!natureza) {
 		throw new HttpError.NotFound(`Natureza [${id}] não encontrada!`);

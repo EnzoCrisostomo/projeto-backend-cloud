@@ -35,11 +35,11 @@ const searchEstabelecimento: RequestHandler = async (req, res) => {
 const detailEstabelecimento: RequestHandler = async (req, res) => {
 	const { id } = z.object({ id: z.coerce.number() }).parse(req.params);
 
-	const estabelecimento = EstabelecimentoEntity.parse(await prisma.estabelecimentos.findUnique({
+	const estabelecimento = await prisma.estabelecimentos.findUnique({
 		where: {
 			id,
 		},
-	}));
+	});
 
 	if (!estabelecimento) {
 		throw new HttpError.NotFound(`Estabelecimento [${id}] não encontrado!`);

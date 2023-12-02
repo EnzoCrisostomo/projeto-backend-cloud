@@ -31,11 +31,11 @@ const searchSimples: RequestHandler = async (req, res) => {
 const detailSimples: RequestHandler = async (req, res) => {
 	const { id } = z.object({ id: z.coerce.number() }).parse(req.params);
 
-	const simples = SimplesEntity.parse(await prisma.simples.findUnique({
+	const simples = await prisma.simples.findUnique({
 		where: {
 			id,
 		},
-	}));
+	});
 
 	if (!simples) {
 		throw new HttpError.NotFound(`Simples [${id}] não encontrado!`);
