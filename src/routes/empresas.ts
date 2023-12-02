@@ -3,6 +3,6 @@ import EmpresaController from "../controllers/empresa";
 
 const empresasRouter = Router();
 
-empresasRouter.get("/", EmpresaController.getEmpresa);
+empresasRouter.get("/", EmpresaController.searchEmpresa);
 
 export default empresasRouter;
