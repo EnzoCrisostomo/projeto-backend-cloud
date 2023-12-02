@@ -1,0 +1,18 @@
+import { z } from "zod";
+
+export const SearchNaturezaParams = z.object({
+  descricao: z.string().optional(),
+  _offset: z.coerce.number().min(0, '_offset não pode ser menor que 0.').optional(),
+  _size: z.coerce.number().min(1, '_size não pode ser menor que 1.').optional(),
+});
+
+export const NaturezaEntity = z.object({
+  codigo: z.string(),
+  descricao: z.string().nullable(),
+})
+
+export const NaturezaEntityList = z.array(
+  NaturezaEntity.merge(
+    z.object({ _total: z.bigint().min(BigInt(0)), })
+  )
+);

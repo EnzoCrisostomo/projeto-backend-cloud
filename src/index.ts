@@ -9,7 +9,7 @@ import handleCommonError from "./middlewares/handleCommonError";
 import handleZodError from "./middlewares/handleZodError";
 import path from "path";
 import dotenv from "dotenv-safe";
-import empresasRouter from "./routes/empresas";
+import rootRouter from "./routes";
 
 const PROJECT_ROOT = path.resolve(__dirname, "..");
 
@@ -18,7 +18,7 @@ dotenv.config({
   path: path.resolve(PROJECT_ROOT, ".env"),
 });
 
-const PORT = process.env.PORT as string;
+const PORT = process.env.PORT;
 
 const app = express();
 
@@ -27,7 +27,7 @@ app.use(helmet());
 app.use(express.json());
 app.use(cors({origin: '*'}));
 
-app.use("/empresas", empresasRouter);
+app.use("/api", rootRouter);
 
 app.use(handleZodError);
 app.use(handlePrismaError);
