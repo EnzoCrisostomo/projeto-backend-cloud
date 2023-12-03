@@ -39,6 +39,13 @@ const detailEstabelecimento: RequestHandler = async (req, res) => {
 		where: {
 			id,
 		},
+		include: {
+			paises: true,
+			municipios: true,
+			estados: true,
+			cnaes_estabelecimentos_cnae_principalTocnaes: true,
+			cnaes_estabelecimentos_cnae_secundariaTocnaes: true,
+		}
 	});
 
 	if (!estabelecimento) {

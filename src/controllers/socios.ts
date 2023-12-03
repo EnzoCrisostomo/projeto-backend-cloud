@@ -38,6 +38,11 @@ const detailSocio: RequestHandler = async (req, res) => {
 		where: {
 			id,
 		},
+		include: {
+			paises: true,
+			qualificacoes_socios_qualificacaoToqualificacoes: true,
+			qualificacoes_socios_qualificacao_representante_legalToqualificacoes: true,
+		}
 	});
 
 	if (!socio) {

@@ -40,6 +40,11 @@ const detailEmpresa: RequestHandler = async (req, res) => {
 		where: {
 			id,
 		},
+		include: {
+			municipios: true,
+			naturezas: true,
+			qualificacoes: true,
+		}
 	});
 
 	if (!empresa) {

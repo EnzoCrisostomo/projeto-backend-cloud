@@ -8,8 +8,10 @@ datasource db {
 }
 
 model cnaes {
-  codigo    String  @id @db.VarChar
-  descricao String?
+  codigo                                                   String             @id @db.VarChar
+  descricao                                                String?
+  estabelecimentos_estabelecimentos_cnae_principalTocnaes  estabelecimentos[] @relation("estabelecimentos_cnae_principalTocnaes")
+  estabelecimentos_estabelecimentos_cnae_secundariaTocnaes estabelecimentos[] @relation("estabelecimentos_cnae_secundariaTocnaes")
 }
 
 model empresas {
@@ -27,39 +29,41 @@ model empresas {
 }
 
 model estabelecimentos {
-  id                          Int         @id @default(autoincrement())
-  cnpj_basico                 String?     @db.VarChar(8)
-  cnpj_ordem                  String?     @db.VarChar(4)
-  cnpj_dv                     String?     @db.VarChar(2)
-  identificador_matriz_filial String?
-  situacao_cadastral          String?
-  data_situacao_cadastral     DateTime?   @db.Timestamp(6)
-  motivo_situacao_cadastral   String?     @db.VarChar
-  nome_cidade_exterior        String?     @db.VarChar
-  pais                        String?     @db.VarChar
-  data_inicio_atividade       DateTime?   @db.Timestamp(6)
-  cnae_principal              String?     @db.VarChar
-  cnae_secundaria             String?     @db.VarChar
-  tipo_logradouro             String?     @db.VarChar
-  logradouro                  String?     @db.VarChar
-  numero                      String?     @db.VarChar
-  complemento                 String?     @db.VarChar
-  bairro                      String?     @db.VarChar
-  cep                         String?     @db.VarChar
-  uf                          String?     @db.VarChar
-  municipio                   String?     @db.VarChar
-  ddd_1                       String?     @db.VarChar
-  telefone_1                  String?     @db.VarChar
-  ddd_2                       String?     @db.VarChar
-  telefone_2                  String?     @db.VarChar
-  ddd_fax                     String?     @db.VarChar
-  fax                         String?     @db.VarChar
-  email                       String?     @db.VarChar
-  situacao_especial           String?     @db.VarChar
-  data_situacao_especial      DateTime?   @db.Timestamp(6)
-  municipios                  municipios? @relation(fields: [municipio], references: [codigo], onDelete: NoAction, onUpdate: NoAction)
-  paises                      paises?     @relation(fields: [pais], references: [codigo], onDelete: NoAction, onUpdate: NoAction)
-  estados                     estados?    @relation(fields: [uf], references: [codigo], onDelete: NoAction, onUpdate: NoAction)
+  id                                            Int         @id @default(autoincrement())
+  cnpj_basico                                   String?     @db.VarChar(8)
+  cnpj_ordem                                    String?     @db.VarChar(4)
+  cnpj_dv                                       String?     @db.VarChar(2)
+  identificador_matriz_filial                   String?
+  situacao_cadastral                            String?
+  data_situacao_cadastral                       DateTime?   @db.Timestamp(6)
+  motivo_situacao_cadastral                     String?     @db.VarChar
+  nome_cidade_exterior                          String?     @db.VarChar
+  pais                                          String?     @db.VarChar
+  data_inicio_atividade                         DateTime?   @db.Timestamp(6)
+  cnae_principal                                String?     @db.VarChar
+  cnae_secundaria                               String?     @db.VarChar
+  tipo_logradouro                               String?     @db.VarChar
+  logradouro                                    String?     @db.VarChar
+  numero                                        String?     @db.VarChar
+  complemento                                   String?     @db.VarChar
+  bairro                                        String?     @db.VarChar
+  cep                                           String?     @db.VarChar
+  uf                                            String?     @db.VarChar
+  municipio                                     String?     @db.VarChar
+  ddd_1                                         String?     @db.VarChar
+  telefone_1                                    String?     @db.VarChar
+  ddd_2                                         String?     @db.VarChar
+  telefone_2                                    String?     @db.VarChar
+  ddd_fax                                       String?     @db.VarChar
+  fax                                           String?     @db.VarChar
+  email                                         String?     @db.VarChar
+  situacao_especial                             String?     @db.VarChar
+  data_situacao_especial                        DateTime?   @db.Timestamp(6)
+  cnaes_estabelecimentos_cnae_principalTocnaes  cnaes?      @relation("estabelecimentos_cnae_principalTocnaes", fields: [cnae_principal], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "estabelecimentos_cnae1_fkey")
+  cnaes_estabelecimentos_cnae_secundariaTocnaes cnaes?      @relation("estabelecimentos_cnae_secundariaTocnaes", fields: [cnae_secundaria], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "estabelecimentos_cnae2_fkey")
+  municipios                                    municipios? @relation(fields: [municipio], references: [codigo], onDelete: NoAction, onUpdate: NoAction)
+  paises                                        paises?     @relation(fields: [pais], references: [codigo], onDelete: NoAction, onUpdate: NoAction)
+  estados                                       estados?    @relation(fields: [uf], references: [codigo], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model estados {
